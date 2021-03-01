@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Home</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:400,700">
+    <!-- https://fonts.google.com/specimen/Roboto -->
+    <link rel="stylesheet" href="../static/css/fontawesome.min.css">
+    <!-- https://fontawesome.com/ -->
+    <link rel="stylesheet" href="../static/css/bootstrap.min.css">
+    <!-- https://getbootstrap.com/ -->
+    <link rel="stylesheet" href="../static/css/templatemo-style.css">
+    <!--
+	Product Admin CSS Template
+	https://templatemo.com/tm-524-product-admin
+	-->
+</head>
+
+<script type="text/javascript">
+    var imageNr = 0; // Serial number of current image
+    var finished = new Array(); // References to img objects which have finished downloading
+    var paused = false;
+
+    function createImageLayer() {
+        var img = new Image();
+        img.style.position = "absolute";
+        img.style.zIndex = -1;
+        img.onload = imageOnload;
+        img.onclick = imageOnclick;
+        img.src = "http://192.168.1.251:8081/?action=snapshot&n=" + (++imageNr);
+        img.width = "320";
+        img.height = "240";
+        var webcam = document.getElementById("webcam");
+        webcam.insertBefore(img, webcam.firstChild);
+    }
+
+    // Two layers are always present (except at the very beginning), to avoid flicker
+    function imageOnload() {
+        this.style.zIndex = imageNr; // Image finished, bring to front!
+        while(1 < finished.length) {
+            var del = finished.shift(); // Delete old image(s) from document
+            del.parentNode.removeChild(del);
+        }
+        finished.push(this);
+        if(!paused) createImageLayer();
+    }
+
+    function imageOnclick() { // Clicking on the image will pause the stream
+        paused = !paused;
+        if(!paused) createImageLayer();
+    }
+
+    // function directionBtnDown(key){
+    //     var url = "http://192.168.1.251:5000/move?key="+key;
+    //     var request = new XMLHttpRequest();
+    //     request.open("GET", url);
+    //     request.send();
+    // }
+
+    // function directionBtnUp(){
+    //     var url = "http://192.168.1.251:5000/move?key="+"stop";
+    //     var request = new XMLHttpRequest();
+    //     request.open("GET", url);
+    //     request.send();
+    // }
+</script>
+
+<body onload="createImageLayer();" id="reportsPage">
+    <div class="" id="home">
+        <nav class="navbar navbar-expand-xl">
+            <div class="container h-100">
+                <a class="navbar-brand" href="index.html">
+                    <h1 class="tm-site-title mb-0">智能驾驶小车系统</h1>
+                </a>
+                <button class="navbar-toggler ml-auto mr-0" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <i class="fas fa-bars tm-nav-icon"></i>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link d-block" href="#">
+                                Admin, <b>Logout</b>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+        </nav>
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <p class="text-white mt-5 mb-5">Welcome back, <b>Admin</b></p>
+                </div>
+            </div>
+            <!-- row -->
+            <div class="row tm-content-row">
+                <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6 tm-block-col">
+                    <div class="tm-bg-primary-dark tm-block">
+                        <h2 class="tm-block-title">前一帧图像处理结果展示</h2>
+                        <!-- <canvas id="lineChart"></canvas> -->
+                        <div style="text-align: center">
+                            <img id="maskimg" src="http://192.168.1.250:5000/show/result.jpg" style="width: 320px; height: 240px;"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6 tm-block-col">
+                    <div class="tm-bg-primary-dark tm-block">
+                        <h2 class="tm-block-title">草地部分识别概率为：</h2>
+                        <!-- <canvas id="barChart"></canvas> -->
+                        <!-- <div class="container-fluid">
+                            <h1 id = "h1_score" style="text-align: center">99.99%</h1>
+                        </div> -->
+
+                        <div class="container-fluid" style="text-align:center;">
+                            <div class="row" style="padding: 10px;">
+                                <div class="col-md-4"></div>
+                                <div class="col-md-3">
+                                    <button type="button" class="btn btn-info" id="turn_up_btn">前进</button>
+                                </div>
+                            </div>
+                            <div class="row" style="padding: 10px;">
+                                <div class="col-md-1"></div>
+                                <div class="col-md-3">
+                                    <button type="button" class="btn btn-info" id="turn_left_btn">左转</button>
+                                </div>
+                                <div class="col-md-3">
+                                    <button type="button" class="btn btn-warning" id="turn_stop_btn">停止</button>
+                                </div>
+                                <div class="col-md-3">
+                                    <button type="button" class="btn btn-info" id="turn_right_btn">右转</button>
+                                </div>
+                            </div>
+                            <div class="row" style="padding: 10px;">
+                                <div class="col-md-4"></div>
+                                <div class="col-md-3">
+                                    <button type="button" class="btn btn-info" id="turn_back_btn">后退</button>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- <button type="button" class="btn btn-defaul" id="up_btn" style="text-align: center">上</button> -->
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6 tm-block-col">
+                    <div class="tm-bg-primary-dark tm-block tm-block-taller">
+                        <h2 class="tm-block-title">小车实时画面</h2>
+                        <div style="margin-left: 70px" id="webcam">
+                            <noscript>
+                            <img src="../static/img/tessave.png" style="width: 320px;height:240px ">
+                            </noscript>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6 tm-block-col">
+                    <div class="tm-bg-primary-dark tm-block tm-block-taller">
+                        <h2 class="tm-block-title">启动/暂定</h2>
+                        <div style="text-align:center; padding: 60px">
+                            <button type="button" class="btn btn-success" id="start_stop_btn" style="text-align: center">启动</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <footer class="tm-footer row tm-mt-small">
+            <div class="col-12 font-weight-light">
+                <p class="text-center text-white mb-0 px-4 small">Copyright &copy; 2019.Company name All rights reserved.<a target="_blank" href="#">DL-SLM小车</a></p>
+            </div>
+        </footer>
+    </div>
+
+    <script src="../static/js/jquery-3.3.1.min.js"></script>
+    <!-- https://jquery.com/download/ -->
+    <script src="../static/js/moment.min.js"></script>
+    <!-- https://momentjs.com/ -->
+    <script src="../static/js/Chart.min.js"></script>
+    <!-- http://www.chartjs.org/docs/latest/ -->
+    <script src="../static/js/bootstrap.min.js"></script>
+    <!-- https://getbootstrap.com/ -->
+    <script src="../static/js/tooplate-scripts.js"></script>
+    <script>
+        Chart.defaults.global.defaultFontColor = 'white';
+        let ctxLine,
+            ctxBar,
+            ctxPie,
+            optionsLine,
+            optionsBar,
+            optionsPie,
+            configLine,
+            configBar,
+            configPie;
+        $(function () {
+
+            $(window).resize(function () {           
+            });
+        })
+    </script>
+    <script type="text/javascript">
+
+        function go(k, n){
+            $.get('http://192.168.1.251:5000/move?key=' + k + '&n=' + n, function(){});
+        }
+        
+        var i = null;
+
+        $("#turn_up_btn").mousedown(function () {
+            var n = Date.now();
+            i = setInterval(function(){
+                console.log("up");
+                go('up', n);
+            }, 50);
+        });
+
+        $("#turn_back_btn").mousedown(function () {
+            var n = Date.now();
+            i = setInterval(function(){
+                console.log("back");
+                go('back', n);
+            }, 50);
+        });
+
+        $("#turn_left_btn").mousedown(function () {
+            var n = Date.now()
+            i = setInterval(function(){
+                console.log("left");
+                go('left', n);
+            }, 50);
+        });
+
+        $("#turn_right_btn").mousedown(function () {
+            var n = Date.now();
+            i = setInterval(function(){
+                console.log("right");
+                go('right', n);
+            }, 50);
+        });
+
+        $("#turn_stop_btn").mousedown(function () {
+            var n = Date.now();
+            console.log("stop");
+            go('stop', n);
+        });
+
+        $("#turn_up_btn").mouseup(function () {
+            var n = Date.now();
+            clearInterval(i);
+            go('stop', n);
+            console.log("stop");
+        });
+
+        $("#turn_back_btn").mouseup(function () {
+            var n = Date.now();
+            clearInterval(i);
+            go('stop', n);
+            console.log("stop");
+        });
+
+        $("#turn_left_btn").mouseup(function () {
+            var n = Date.now();
+            clearInterval(i);
+            go('stop', n);
+            console.log("stop");
+        });
+
+        $("#turn_right_btn").mouseup(function () {
+            var n = Date.now();
+            clearInterval(i);
+            go('stop', n);
+            console.log("stop");
+        });
+
+	    $("#start_stop_btn").click(function () {
+                if(this.className.split(/\s+/)[1] == "btn-success"){
+                    this.setAttribute("class","btn btn-danger");
+                    this.innerHTML = "暂停";
+                    $.ajax({
+                        url: 'http://192.168.1.251:5000/start?flag=1', //地址
+                        dataType: null, //数据类型
+                        type: 'GET', //类型
+                        timeout: 2000, //超时
+                        //请求成功
+                        success: function(data, status) {
+                            alert("启动成功");
+                        },
+                        //失败/超时
+                        error: function(XMLHttpRequest, textStatus, errorThrown) {
+                            alert("启动失败");
+                        }
+                    })
+                }else{
+                    this.setAttribute("class","btn btn-success");
+                    this.innerHTML = "启动";
+                    $.ajax({
+                        url: 'http://192.168.1.251:5000/start?flag=0', //地址
+                        dataType: null, //数据类型
+                        type: 'GET', //类型
+                        timeout: 2000, //超时
+                        //请求成功
+                        success: function(data, status) {
+                            alert("暂停成功");
+                        },
+                        //失败/超时
+                        error: function(XMLHttpRequest, textStatus, errorThrown) {
+                            alert(errorThrown);
+                        }
+                    })
+                }
+        });
+
+        function change() {
+            // 访问的资源地址不能一样，不然image不会更新
+            document.getElementById('maskimg').src = 'http://192.168.1.250:5000/show/result.jpg?' + Date.now();
+            // $.ajax({
+            //     url: 'http://192.168.1.250:5000/show/result.jpg', //地址
+            //     dataType: 'json', //数据类型
+            //     type: 'GET', //类型
+            //     timeout: 2000, //超时
+            //     //请求成功
+            //     success: function(data, status) {
+            //         //alert(data);
+            //         //alert(status);
+            //         console.log(data);
+            //         if(data.check == "True") {
+            //             document.getElementById('maskimg').src = 'http://192.168.1.250:5000/show/result.jpg';
+            //         }
+            //     },
+            //     //失败/超时
+            //     error: function(XMLHttpRequest, textStatus, errorThrown) {
+            //         if(textStatus === 'timeout') {
+            //             alert('請求超時');
+            //             setTimeout(function() {
+            //                 alert('重新请求');
+            //             }, 2000);
+            //         }
+            //         //alert(errorThrown);
+            //     }
+            // })
+        }
+        setInterval('change()',2000);
+        </script>
+</body>
+
+</html>
